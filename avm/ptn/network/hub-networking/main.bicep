@@ -46,6 +46,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
   }
 
 // Create hub virtual networks
+// Testig the new version of the module
 module hubVirtualNetwork 'br/public:avm/res/network/virtual-network:0.1.1' = [
   for (hub, index) in items(hubVirtualNetworks ?? {}): {
     name: '${uniqueString(deployment().name, location)}-${hub.value.name}-nvn'
