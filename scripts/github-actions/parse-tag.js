@@ -10,7 +10,7 @@ function parseTag({ core, tag }) {
 
   if (segments.length !== 3 || segments.includes("")) {
     core.setFailed(
-      `Invalid tag: "${tag}". A valid tag must be in the format of "<ModuleFolder>/<ModuleName>/<ModuleVersion>".`
+      `Invalid tag: "${tag}". A valid tag must be in the format of "<ModuleFolder>/<ModuleName>/<ModuleVersion>".`,
     );
   }
 
@@ -20,13 +20,13 @@ function parseTag({ core, tag }) {
 
   if (!modulePathSegmentRegex.test(moduleFolder)) {
     core.setFailed(
-      `The module folder "${moduleFolder}" in the tag "${tag}" is invalid. It must match the regex "${modulePathSegmentRegex}".`
+      `The module folder "${moduleFolder}" in the tag "${tag}" is invalid. It must match the regex "${modulePathSegmentRegex}".`,
     );
   }
 
   if (!modulePathSegmentRegex.test(moduleName)) {
     core.setFailed(
-      `The module name "${moduleName}" in the tag "${tag}" is invalid. It must match the regex "${modulePathSegmentRegex}".`
+      `The module name "${moduleName}" in the tag "${tag}" is invalid. It must match the regex "${modulePathSegmentRegex}".`,
     );
   }
 
@@ -36,7 +36,7 @@ function parseTag({ core, tag }) {
 
   if (!versionRegex.test(version)) {
     core.setFailed(
-      `The version "${version}" in the tag "${tag}" is invalid. It must match the regex "${versionRegex}".`
+      `The version "${version}" in the tag "${tag}" is invalid. It must match the regex "${versionRegex}".`,
     );
   }
 

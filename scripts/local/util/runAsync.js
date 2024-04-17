@@ -41,7 +41,7 @@ async function queryRunAsync(cmds, optionalFriendlyPrompt) {
       (optionalFriendlyPrompt ??
         `Run the following commands?\n${yellow}${cmds.join("\n")}${reset}?`);
     const answer = await queryUserAsync(
-      `${reset}${prompt} ${red}(y/n/a/q)${reset}`
+      `${reset}${prompt} ${red}(y/n/a/q)${reset}`,
     );
     console.log(`answer: ${answer}`);
 

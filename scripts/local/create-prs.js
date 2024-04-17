@@ -50,7 +50,7 @@ async function getChangedModulesAsync() {
 
 async function CreatePRAsync(modulePath) {
   console.log(
-    `${clearScreen}${green}=========== Creating PR for ${modulePath}...${reset}`
+    `${clearScreen}${green}=========== Creating PR for ${modulePath}...${reset}`,
   );
 
   const branchName = `${branchPrefix}/auto/${modulePath}`;
@@ -74,7 +74,7 @@ async function CreatePRAsync(modulePath) {
     await runAsync(`git branch -d ${branchName}`);
   } else {
     console.log(
-      `${red}Branch ${branchName} contains the unsubmitted changes.${reset}`
+      `${red}Branch ${branchName} contains the unsubmitted changes.${reset}`,
     );
   }
 

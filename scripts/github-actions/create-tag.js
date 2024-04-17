@@ -26,7 +26,7 @@ async function createTag({
 
   if (compareResult < 0) {
     core.setFailed(
-      `The version ${headVersion} calculated at the commit ${head} (head) is smaller than the version ${baseVersion} calculated at the base commit ${base} (base).`
+      `The version ${headVersion} calculated at the commit ${head} (head) is smaller than the version ${baseVersion} calculated at the base commit ${base} (base).`,
     );
   }
 
@@ -39,7 +39,7 @@ async function createTag({
   const green = "\u001b[32m";
   const reset = "\u001b[0m";
   core.info(
-    `Detected version update: ${red}${baseVersion} (old) ${reset}-> ${green}${headVersion} (new).`
+    `Detected version update: ${red}${baseVersion} (old) ${reset}-> ${green}${headVersion} (new).`,
   );
 
   const modulePath = moduleDir.substring(moduleDir.indexOf("/") + 1);
