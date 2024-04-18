@@ -32,13 +32,13 @@ async function getChangedModule({ require, github, context, core }) {
 
   if (status !== 200) {
     core.setFailed(
-      `Expected github.rest.repos.compareCommitsWithBasehead to return 200, got ${status}.`
+      `Expected github.rest.repos.compareCommitsWithBasehead to return 200, got ${status}.`,
     );
   }
 
   if (context.eventName === "push" && data.status !== "ahead") {
     core.setFailed(
-      `The head commit ${head} is not ahead of the base commit ${base}.`
+      `The head commit ${head} is not ahead of the base commit ${base}.`,
     );
   }
 
@@ -59,7 +59,7 @@ async function getChangedModule({ require, github, context, core }) {
           return segments.slice(0, 3).join("/");
         })
         // Ignore removed module directories.
-        .filter((dir) => fs.existsSync(dir))
+        .filter((dir) => fs.existsSync(dir)),
     ),
   ];
 

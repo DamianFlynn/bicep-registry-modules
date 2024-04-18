@@ -4,7 +4,7 @@ const { readFileSync } = require("fs");
 function updateReadmeExamples(
   modulePath,
   currentVersion, // what the current version should be
-  updateToVersion // update all versions to this
+  updateToVersion, // update all versions to this
 ) {
   const fs = require("fs");
   const path = require("path");
@@ -30,38 +30,38 @@ function updateReadmeExamples(
   versions = Array.from(new Set(versions.map((m) => m[0]))); // dedupe
   if (versions.length === 0) {
     console.warn(
-      `${yellow}No module references found in ${readmePath}.${reset}`
+      `${yellow}No module references found in ${readmePath}.${reset}`,
     );
     return false;
   }
 
   const unexpectedVersions = versions.filter(
-    (m) => m !== currentModulePath && m !== nextModulePath
+    (m) => m !== currentModulePath && m !== nextModulePath,
   );
   if (unexpectedVersions.length > 0) {
     console.error(
-      `... ${red}UNEXPECTED VERSIONS FOUND in ${readmePath}: ${unexpectedVersions}${reset}`
+      `... ${red}UNEXPECTED VERSIONS FOUND in ${readmePath}: ${unexpectedVersions}${reset}`,
     );
     console.error(
       currentModulePath == nextModulePath
         ? `...   Expected ${currentModulePath}`
-        : `...   Expected either ${currentModulePath} or ${nextModulePath}${reset}`
+        : `...   Expected either ${currentModulePath} or ${nextModulePath}${reset}`,
     );
   }
 
   const updatedReadmeContent = readmeContent.replace(
     new RegExp(anyRefPattern, "g"),
-    nextModulePath
+    nextModulePath,
   );
   if (updatedReadmeContent !== readmeContent) {
     console.log(
-      `... ${green}Updated module references in README.md to ${nextModulePath}.${reset}`
+      `... ${green}Updated module references in README.md to ${nextModulePath}.${reset}`,
     );
     fs.writeFileSync(readmePath, updatedReadmeContent, "utf8");
     return true;
   } else {
     console.log(
-      `... ${blue}Module references in README.md are up-to-date.${reset}`
+      `... ${blue}Module references in README.md are up-to-date.${reset}`,
     );
     return false;
   }

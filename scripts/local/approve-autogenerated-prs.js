@@ -24,15 +24,15 @@ const { argv } = require("process");
 
 function formatPR(pr) {
   return `#${pr.number} (${pr.author.login} ${pr.state} ${pr.labels.map(
-    (l) => l.name
+    (l) => l.name,
   )}) ${yellow}${pr.title}${reset}`;
 }
 
 async function ApprovePRs() {
   const prs = JSON.parse(
     await runAsync(
-      `gh pr list --label "Auto-generated" --state open --limit 500 --json number,author,title,state,labels,statusCheckRollup -S "review:required draft:false"`
-    )
+      `gh pr list --label "Auto-generated" --state open --limit 500 --json number,author,title,state,labels,statusCheckRollup -S "review:required draft:false"`,
+    ),
   );
 
   console.log(`${yellow}Found these PRs:${reset}`);
@@ -47,7 +47,7 @@ async function ApprovePRs() {
         `gh pr merge --auto --squash ${pr.number}`,
         `gh pr review --approve ${pr.number}`,
       ],
-      `Approve the following PR?${reset}\n${formatPR(pr)}`
+      `Approve the following PR?${reset}\n${formatPR(pr)}`,
     );
   }
 }

@@ -21,7 +21,7 @@ const { green, reset, yellow } = require("./util/colors");
 const semver = require("semver");
 
 let brm = resolve(
-  `../bicep/src/Bicep.RegistryModuleTool/Bin/Debug/net7.0/Azure.Bicep.RegistryModuleTool`
+  `../bicep/src/Bicep.RegistryModuleTool/Bin/Debug/net7.0/Azure.Bicep.RegistryModuleTool`,
 );
 brm = existsSync(brm) ? brm : brm + ".exe";
 brm = existsSync(brm) ? brm : "brm";
@@ -49,7 +49,7 @@ async function regenerateAllAsync() {
         if (
           /Please run "brm generate"/.test(String(err)) ||
           /The "summary" property in metadata.json does not match/.test(
-            String(err)
+            String(err),
           )
         ) {
           needsGenerate = true;
@@ -60,22 +60,22 @@ async function regenerateAllAsync() {
 
       if (needsGenerate) {
         console.error(
-          `${yellow}Generating: ${modulePath} (version ${version})${reset}`
+          `${yellow}Generating: ${modulePath} (version ${version})${reset}`,
         );
         await runAsync(`${brm} generate`);
 
         console.error(
-          `${yellow}Updating README for ${modulePath} (version ${version})${reset}`
+          `${yellow}Updating README for ${modulePath} (version ${version})${reset}`,
         );
         process.chdir(resolve(currentDir));
         await updateReadmeExamples(
           modulePath,
           version,
-          getNextVersion(version)
+          getNextVersion(version),
         );
       } else {
         console.error(
-          `${green}Does not need regeneration: ${modulePath}${reset}`
+          `${green}Does not need regeneration: ${modulePath}${reset}`,
         );
       }
     } finally {
