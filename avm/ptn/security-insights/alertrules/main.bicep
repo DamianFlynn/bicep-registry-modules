@@ -48,14 +48,14 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
 // Add your resources here
 //
 
-resource workspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' existing = {
+resource sentinelWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
   name: workspaceId
 }
 
-resource deployedRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-preview' = [
+resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-preview' = [
   for (rule, index) in rules: {
-    name: rule.displayName
-    scope: workspace // Directly use the workspace resource as the scope
+    name: rule.alertRuleTemplateName
+    scope: sentinelWorkspace // Directly use the workspace resource as the scope
     kind: 'Scheduled'
     properties: rule
   }
