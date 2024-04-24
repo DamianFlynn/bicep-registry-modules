@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "9065993604642400107"
+      "templateHash": "3604286840026111347"
     },
     "name": "Sentinel Rules Deployment",
     "description": "The Pattern will deploy Sentinel Rules to a Log Analytics Workspace.",
@@ -116,10 +116,10 @@
         "description": "Optional. Enable/Disable usage telemetry for module."
       }
     },
-    "workspaceId": {
+    "sentinelWorkspaceId": {
       "type": "string",
       "metadata": {
-        "description": "Required. The ID of the Log Analytics workspace."
+        "description": "Required. The ID of the Log Analytics workspace which we will be utilized for Azure Sentinel."
       }
     },
     "rules": {
@@ -153,11 +153,31 @@
         }
       }
     },
-    "workspace": {
+    "sentinelWorkspace": {
+      "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
       "existing": true,
       "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2023-09-01",
-      "name": "[parameters('workspaceId')]"
+      "apiVersion": "2022-10-01",
+      "name": "[last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))]"
+    },
+    "sentinel": {
+      "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[format('SecurityInsights({0})', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]"
+      },
+      "plan": {
+        "name": "[format('SecurityInsights({0})', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
+        "product": "OMSGallery/SecurityInsights",
+        "promotionCode": "",
+        "publisher": "Microsoft"
+      },
+      "dependsOn": [
+        "sentinelWorkspace"
+      ]
     },
     "scheduledAlertRules": {
       "copy": {
@@ -166,13 +186,36 @@
       },
       "type": "Microsoft.SecurityInsights/alertRules",
       "apiVersion": "2023-02-01-preview",
-      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', parameters('workspaceId'))]",
-      "name": "[parameters('rules')[copyIndex()].displayName]",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
+      "name": "[parameters('rules')[copyIndex()].alertRuleTemplateName]",
       "kind": "Scheduled",
       "properties": "[parameters('rules')[copyIndex()]]",
       "dependsOn": [
-        "workspace"
+        "sentinelWorkspace"
       ]
+    }
+  },
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource ID of the Sentinel Workspace resource."
+      },
+      "value": "[resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]"
+    },
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resource."
+      },
+      "value": "[last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))]"
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The location the resource was deployed into."
+      },
+      "value": "[reference('sentinelWorkspace', '2022-10-01', 'full').location]"
     }
   }
 }

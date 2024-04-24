@@ -27,80 +27,80 @@ param rules array = [
   {
     displayName: 'Failed login attempts to Azure Portal'
     description: '''
- 'Identifies failed login attempts in the Microsoft Entra ID SigninLogs to the Azure Portal.  Many failed logon
-attempts or some failed logon attempts from multiple IPs could indicate a potential brute force attack.
-The following are excluded due to success and non-failure results:
-References: https://docs.microsoft.com/azure/active-directory/reports-monitoring/reference-sign-ins-error-codes
-0 - successful logon
-50125 - Sign-in was interrupted due to a password reset or password registration entry.
-50140 - This error occurred due to 'Keep me signed in' interrupt when the user was signing-in.'
- '''
+   'Identifies failed login attempts in the Microsoft Entra ID SigninLogs to the Azure Portal.  Many failed logon
+  attempts or some failed logon attempts from multiple IPs could indicate a potential brute force attack.
+  The following are excluded due to success and non-failure results:
+  References: https://docs.microsoft.com/azure/active-directory/reports-monitoring/reference-sign-ins-error-codes
+  0 - successful logon
+  50125 - Sign-in was interrupted due to a password reset or password registration entry.
+  50140 - This error occurred due to 'Keep me signed in' interrupt when the user was signing-in.'
+   '''
     query: '''
- let timeRange = 1d;
-let lookBack = 7d;
-let threshold_Failed = 1;
-let threshold_FailedwithSingleIP = 20;
-let threshold_IPAddressCount = 2;
-let isGUID = "[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}";
-let aadFunc = (tableName:string){
-let azPortalSignins = materialize(table(tableName)
-| where TimeGenerated >= ago(lookBack)
-// Azure Portal only
-| where AppDisplayName =~ "Azure Portal")
-;
-let successPortalSignins = azPortalSignins
-| where TimeGenerated >= ago(timeRange)
-// Azure Portal only and exclude non-failure Result Types
-| where ResultType in ("0", "50125", "50140")
-// Tagging identities not resolved to friendly names
-//| extend Unresolved = iff(Identity matches regex isGUID, true, false)
-| distinct TimeGenerated, UserPrincipalName
-;
-let failPortalSignins = azPortalSignins
-| where TimeGenerated >= ago(timeRange)
-// Azure Portal only and exclude non-failure Result Types
-| where ResultType !in ("0", "50125", "50140", "70044", "70043")
-// Tagging identities not resolved to friendly names
-| extend Unresolved = iff(Identity matches regex isGUID, true, false)
-;
-// Verify there is no success for the same connection attempt after the fail
-let failnoSuccess = failPortalSignins | join kind= leftouter (
-   successPortalSignins
-) on UserPrincipalName
-| where TimeGenerated > TimeGenerated1 or isempty(TimeGenerated1)
-| project-away TimeGenerated1, UserPrincipalName1
-;
-// Lookup up resolved identities from last 7 days
-let identityLookup = azPortalSignins
-| where TimeGenerated >= ago(lookBack)
-| where not(Identity matches regex isGUID)
-| summarize by UserId, lu_UserDisplayName = UserDisplayName, lu_UserPrincipalName = UserPrincipalName;
-// Join resolved names to unresolved list from portal signins
-let unresolvedNames = failnoSuccess | where Unresolved == true | join kind= inner (
-   identityLookup
-) on UserId
-| extend UserDisplayName = lu_UserDisplayName, UserPrincipalName = lu_UserPrincipalName
-| project-away lu_UserDisplayName, lu_UserPrincipalName;
-// Join Signins that had resolved names with list of unresolved that now have a resolved name
-let u_azPortalSignins = failnoSuccess | where Unresolved == false | union unresolvedNames;
-u_azPortalSignins
-| extend DeviceDetail = todynamic(DeviceDetail), Status = todynamic(DeviceDetail), LocationDetails = todynamic(LocationDetails)
-| extend Status = strcat(ResultType, ": ", ResultDescription), OS = tostring(DeviceDetail.operatingSystem), Browser = tostring(DeviceDetail.browser)
-| extend State = tostring(LocationDetails.state), City = tostring(LocationDetails.city), Region = tostring(LocationDetails.countryOrRegion)
-| extend FullLocation = strcat(Region,'|', State, '|', City)
-| summarize TimeGenerated = make_list(TimeGenerated,100), Status = make_list(Status,100), IPAddresses = make_list(IPAddress,100), IPAddressCount = dcount(IPAddress), FailedLogonCount = count()
-by UserPrincipalName, UserId, UserDisplayName, AppDisplayName, Browser, OS, FullLocation, Type
-| mvexpand TimeGenerated, IPAddresses, Status
-| extend TimeGenerated = todatetime(tostring(TimeGenerated)), IPAddress = tostring(IPAddresses), Status = tostring(Status)
-| project-away IPAddresses
-| summarize StartTime = min(TimeGenerated), EndTime = max(TimeGenerated) by UserPrincipalName, UserId, UserDisplayName, Status, FailedLogonCount, IPAddress, IPAddressCount, AppDisplayName, Browser, OS, FullLocation, Type
-| where (IPAddressCount >= threshold_IPAddressCount and FailedLogonCount >= threshold_Failed) or FailedLogonCount >= threshold_FailedwithSingleIP
-| extend timestamp = StartTime, Name = tostring(split(UserPrincipalName,'@',0)[0]), UPNSuffix = tostring(split(UserPrincipalName,'@',1)[0])
-};
-let aadSignin = aadFunc("SigninLogs");
-let aadNonInt = aadFunc("AADNonInteractiveUserSignInLogs");
-union isfuzzy=true aadSignin, aadNonInt
- '''
+   let timeRange = 1d;
+  let lookBack = 7d;
+  let threshold_Failed = 1;
+  let threshold_FailedwithSingleIP = 20;
+  let threshold_IPAddressCount = 2;
+  let isGUID = "[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}";
+  let aadFunc = (tableName:string){
+  let azPortalSignins = materialize(table(tableName)
+  | where TimeGenerated >= ago(lookBack)
+  // Azure Portal only
+  | where AppDisplayName =~ "Azure Portal")
+  ;
+  let successPortalSignins = azPortalSignins
+  | where TimeGenerated >= ago(timeRange)
+  // Azure Portal only and exclude non-failure Result Types
+  | where ResultType in ("0", "50125", "50140")
+  // Tagging identities not resolved to friendly names
+  //| extend Unresolved = iff(Identity matches regex isGUID, true, false)
+  | distinct TimeGenerated, UserPrincipalName
+  ;
+  let failPortalSignins = azPortalSignins
+  | where TimeGenerated >= ago(timeRange)
+  // Azure Portal only and exclude non-failure Result Types
+  | where ResultType !in ("0", "50125", "50140", "70044", "70043")
+  // Tagging identities not resolved to friendly names
+  | extend Unresolved = iff(Identity matches regex isGUID, true, false)
+  ;
+  // Verify there is no success for the same connection attempt after the fail
+  let failnoSuccess = failPortalSignins | join kind= leftouter (
+     successPortalSignins
+  ) on UserPrincipalName
+  | where TimeGenerated > TimeGenerated1 or isempty(TimeGenerated1)
+  | project-away TimeGenerated1, UserPrincipalName1
+  ;
+  // Lookup up resolved identities from last 7 days
+  let identityLookup = azPortalSignins
+  | where TimeGenerated >= ago(lookBack)
+  | where not(Identity matches regex isGUID)
+  | summarize by UserId, lu_UserDisplayName = UserDisplayName, lu_UserPrincipalName = UserPrincipalName;
+  // Join resolved names to unresolved list from portal signins
+  let unresolvedNames = failnoSuccess | where Unresolved == true | join kind= inner (
+     identityLookup
+  ) on UserId
+  | extend UserDisplayName = lu_UserDisplayName, UserPrincipalName = lu_UserPrincipalName
+  | project-away lu_UserDisplayName, lu_UserPrincipalName;
+  // Join Signins that had resolved names with list of unresolved that now have a resolved name
+  let u_azPortalSignins = failnoSuccess | where Unresolved == false | union unresolvedNames;
+  u_azPortalSignins
+  | extend DeviceDetail = todynamic(DeviceDetail), Status = todynamic(DeviceDetail), LocationDetails = todynamic(LocationDetails)
+  | extend Status = strcat(ResultType, ": ", ResultDescription), OS = tostring(DeviceDetail.operatingSystem), Browser = tostring(DeviceDetail.browser)
+  | extend State = tostring(LocationDetails.state), City = tostring(LocationDetails.city), Region = tostring(LocationDetails.countryOrRegion)
+  | extend FullLocation = strcat(Region,'|', State, '|', City)
+  | summarize TimeGenerated = make_list(TimeGenerated,100), Status = make_list(Status,100), IPAddresses = make_list(IPAddress,100), IPAddressCount = dcount(IPAddress), FailedLogonCount = count()
+  by UserPrincipalName, UserId, UserDisplayName, AppDisplayName, Browser, OS, FullLocation, Type
+  | mvexpand TimeGenerated, IPAddresses, Status
+  | extend TimeGenerated = todatetime(tostring(TimeGenerated)), IPAddress = tostring(IPAddresses), Status = tostring(Status)
+  | project-away IPAddresses
+  | summarize StartTime = min(TimeGenerated), EndTime = max(TimeGenerated) by UserPrincipalName, UserId, UserDisplayName, Status, FailedLogonCount, IPAddress, IPAddressCount, AppDisplayName, Browser, OS, FullLocation, Type
+  | where (IPAddressCount >= threshold_IPAddressCount and FailedLogonCount >= threshold_Failed) or FailedLogonCount >= threshold_FailedwithSingleIP
+  | extend timestamp = StartTime, Name = tostring(split(UserPrincipalName,'@',0)[0]), UPNSuffix = tostring(split(UserPrincipalName,'@',1)[0])
+  };
+  let aadSignin = aadFunc("SigninLogs");
+  let aadNonInt = aadFunc("AADNonInteractiveUserSignInLogs");
+  union isfuzzy=true aadSignin, aadNonInt
+   '''
     queryPeriod: 'PT5M'
     queryFrequency: 'PT5M'
     triggerOperator: 'GreaterThan'
@@ -150,33 +150,44 @@ union isfuzzy=true aadSignin, aadNonInt
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: resourceGroupName
-  location: resourceLocation
-}
+// resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+//   name: resourceGroupName
+//   location: resourceLocation
+// }
 
-module nestedDependencies 'dependencies.bicep' = {
-  scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+module diagnostics '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+  scope: az.resourceGroup(resourceGroupName)
+  name: '${uniqueString(deployment().name, resourceLocation)}-diagnostics'
   params: {
     location: resourceLocation
-    logAnalyticsName: 'dep-${namePrefix}-${serviceShort}-law'
+    eventHubNamespaceEventHubName: 'dep-${namePrefix}-${serviceShort}-eh'
+    eventHubNamespaceName: 'dep-${namePrefix}-${serviceShort}-ehns'
+    logAnalyticsWorkspaceName: 'dep-${namePrefix}-${serviceShort}-law'
+    storageAccountName: 'dep${namePrefix}${serviceShort}sa'
   }
 }
+
+// module nestedDependencies 'dependencies.bicep' = {
+//   scope: resourceGroup
+//   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+//   params: {
+//     location: resourceLocation
+//     logAnalyticsName: 'dep-${namePrefix}-${serviceShort}-law'
+//   }
+// }
 
 // ============== //
 // Test Execution //
 // ============== //
 
 @batchSize(1)
-module testDeployment '../../../main.bicep' = [
+module resourceDeployment '../../../main.bicep' = [
   for iteration in ['init', 'idem']: {
-    scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    scope: resourceGroup(resourceGroupName) // Ensure the scope is correctly set
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${iteration}'
     params: {
-      // You parameters go here
       location: resourceLocation
-      workspaceId: nestedDependencies.outputs.workspaceId
+      sentinelWorkspaceId: diagnostics.outputs.logAnalyticsWorkspaceResourceId
       rules: rules
     }
   }

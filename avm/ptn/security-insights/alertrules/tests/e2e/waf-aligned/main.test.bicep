@@ -155,28 +155,39 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: resourceLocation
 }
 
-module nestedDependencies 'dependencies.bicep' = {
+module diagnostics '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
   scope: resourceGroup
-  name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+  name: '${uniqueString(deployment().name, resourceLocation)}-diagnostics'
   params: {
     location: resourceLocation
-    logAnalyticsName: 'dep-${namePrefix}-${serviceShort}-law'
+    eventHubNamespaceEventHubName: 'dep-${namePrefix}-${serviceShort}-eh'
+    eventHubNamespaceName: 'dep-${namePrefix}-${serviceShort}-ehns'
+    logAnalyticsWorkspaceName: 'dep-${namePrefix}-${serviceShort}-law'
+    storageAccountName: 'dep${namePrefix}${serviceShort}sa'
   }
 }
+
+// module nestedDependencies 'dependencies.bicep' = {
+//   scope: resourceGroup
+//   name: '${uniqueString(deployment().name, resourceLocation)}-nestedDependencies'
+//   params: {
+//     location: resourceLocation
+//     logAnalyticsName: 'dep-${namePrefix}-${serviceShort}-law'
+//   }
+// }
 
 // ============== //
 // Test Execution //
 // ============== //
 
 @batchSize(1)
-module testDeployment '../../../main.bicep' = [
+module resourceDeployment '../../../main.bicep' = [
   for iteration in ['init', 'idem']: {
-    scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
+    scope: resourceGroup // Ensure the scope is correctly set
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${iteration}'
     params: {
-      // You parameters go here
       location: resourceLocation
-      workspaceId: nestedDependencies.outputs.workspaceId
+      sentinelWorkspaceId: diagnostics.outputs.logAnalyticsWorkspaceResourceId
       rules: rules
     }
   }

@@ -11,11 +11,11 @@ param location string = resourceGroup().location
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
 
-@description('Required. The ID of the Log Analytics workspace.')
-param workspaceId string
+@description('Required. The ID of the Log Analytics workspace which we will be utilized for Azure Sentinel.')
+param sentinelWorkspaceId string
 
 @description('Optional. An array of rule objects to deploy.')
-param rules array = [{}]
+param rules array = []
 
 //
 // Add your parameters here
@@ -48,14 +48,34 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
 // Add your resources here
 //
 
-resource sentinelWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {
-  name: workspaceId
-}
+resource sentinelWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing =
+  if (!empty(sentinelWorkspaceId) && !empty(rules)) {
+    name: last(split((!empty(sentinelWorkspaceId) ? sentinelWorkspaceId : 'law'), '/'))!
+  }
+
+// Ensure we have the sentinel solution
+
+resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' =
+  if (!empty(sentinelWorkspaceId) && !empty(rules)) {
+    name: 'SecurityInsights(${sentinelWorkspace.name})'
+    location: location
+    properties: {
+      workspaceResourceId: sentinelWorkspace.id
+    }
+    plan: {
+      name: 'SecurityInsights(${sentinelWorkspace.name})'
+      product: 'OMSGallery/SecurityInsights'
+      promotionCode: ''
+      publisher: 'Microsoft'
+    }
+  }
+
+// Deploy rules
 
 resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-preview' = [
   for (rule, index) in rules: {
     name: rule.alertRuleTemplateName
-    scope: sentinelWorkspace // Directly use the workspace resource as the scope
+    scope: sentinelWorkspace
     kind: 'Scheduled'
     properties: rule
   }
@@ -67,14 +87,14 @@ resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-p
 
 // Add your outputs here
 
-// @description('The resource ID of the resource.')
-// output resourceId string = <Resource>.id
+@description('The resource ID of the Sentinel Workspace resource.')
+output resourceId string = sentinelWorkspace.id
 
-// @description('The name of the resource.')
-// output name string = <Resource>.name
+@description('The name of the resource.')
+output name string = sentinelWorkspace.name
 
-// @description('The location the resource was deployed into.')
-// output location string = <Resource>.location
+@description('The location the resource was deployed into.')
+output location string = sentinelWorkspace.location
 
 // ================ //
 // Definitions      //
