@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "14412661460878006828"
+      "templateHash": "475657673574386632"
     },
     "name": "Security Insights - Alert Rules",
     "description": "Implement alert rules for Security Insights",
@@ -35,14 +35,14 @@
     "sentinelWorkspaceId": {
       "type": "string",
       "metadata": {
-        "description": "The workspace ID of the Sentinel workspace we will be working with."
+        "description": "Required. The workspace ID of the Sentinel workspace we will be working with."
       }
     },
     "rules": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "An array of alert rules to create."
+        "description": "Optional. An array of alert rules to create."
       }
     }
   },
@@ -91,6 +91,13 @@
         "description": "The resource ID of the resource."
       },
       "value": "[resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group of the resource."
+      },
+      "value": "[resourceGroup().name]"
     },
     "name": {
       "type": "string",

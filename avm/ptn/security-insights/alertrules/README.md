@@ -25,10 +25,13 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/ptn/security-insights/alertrules:<version>`.
 
-- [Defaults](#example-1-defaults)
-- [Waf-Aligned](#example-2-waf-aligned)
+- [Security Insights - Alert Rules Default Configuration](#example-1-security-insights---alert-rules-default-configuration)
+- [Security Insights - Alert Rules Well Architected Configuration](#example-2-security-insights---alert-rules-well-architected-configuration)
 
-### Example 1: _Defaults_
+### Example 1: _Security Insights - Alert Rules Default Configuration_
+
+Implement alert rules for Security Insights using a default configuration.
+
 
 <details>
 
@@ -39,7 +42,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   name: 'alertrulesDeployment'
   params: {
     // Required parameters
-    name: 'siadef001'
+    name: 'csocmin001'
     sentinelWorkspaceId: '<sentinelWorkspaceId>'
     // Non-required parameters
     location: '<location>'
@@ -62,7 +65,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "siadef001"
+      "value": "csocmin001"
     },
     "sentinelWorkspaceId": {
       "value": "<sentinelWorkspaceId>"
@@ -81,7 +84,10 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 </details>
 <p>
 
-### Example 2: _Waf-Aligned_
+### Example 2: _Security Insights - Alert Rules Well Architected Configuration_
+
+Implement alert rules for Security Insights using a WAF Compliant configuration.
+
 
 <details>
 
@@ -92,7 +98,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   name: 'alertrulesDeployment'
   params: {
     // Required parameters
-    name: 'siawaf001'
+    name: 'csocwaf001'
     sentinelWorkspaceId: '<sentinelWorkspaceId>'
     // Non-required parameters
     location: '<location>'
@@ -115,7 +121,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "siawaf001"
+      "value": "csocwaf001"
     },
     "sentinelWorkspaceId": {
       "value": "<sentinelWorkspaceId>"
@@ -142,6 +148,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`name`](#parameter-name) | string | Name of the resource to create. |
+| [`sentinelWorkspaceId`](#parameter-sentinelworkspaceid) | string | The workspace ID of the Sentinel workspace we will be working with. |
 
 **Optional parameters**
 
@@ -149,20 +156,18 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 | :-- | :-- | :-- |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
-
-**The workspace ID of the Sentinel workspace we will be working with parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
-
-**An array of alert rules to create parameters**
-
-| Parameter | Type | Description |
-| :-- | :-- | :-- |
+| [`rules`](#parameter-rules) | array | An array of alert rules to create. |
 
 ### Parameter: `name`
 
 Name of the resource to create.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `sentinelWorkspaceId`
+
+The workspace ID of the Sentinel workspace we will be working with.
 
 - Required: Yes
 - Type: string
@@ -183,6 +188,14 @@ Location for all Resources.
 - Type: string
 - Default: `[resourceGroup().location]`
 
+### Parameter: `rules`
+
+An array of alert rules to create.
+
+- Required: No
+- Type: array
+- Default: `[]`
+
 
 ## Outputs
 
@@ -190,6 +203,7 @@ Location for all Resources.
 | :-- | :-- | :-- |
 | `location` | string | The location the resource was deployed into. |
 | `name` | string | The name of the resource. |
+| `resourceGroupName` | string | The resource group of the resource. |
 | `resourceId` | string | The resource ID of the resource. |
 
 ## Cross-referenced modules
