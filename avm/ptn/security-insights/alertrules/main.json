@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "4668949927113096908"
+      "templateHash": "6706399367377788333"
     },
     "name": "Security Insights - Alert Rules",
     "description": "Implement alert rules for Security Insights",
@@ -93,7 +93,10 @@
       "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
       "name": "[parameters('rules')[copyIndex()].alertRuleTemplateName]",
       "kind": "Scheduled",
-      "properties": "[parameters('rules')[copyIndex()]]"
+      "properties": "[parameters('rules')[copyIndex()]]",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationsManagement/solutions', format('SecurityInsights({0})', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))))]"
+      ]
     }
   ],
   "outputs": {

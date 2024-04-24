@@ -78,6 +78,7 @@ resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-p
   for (rule, index) in rules: {
     name: rule.alertRuleTemplateName
     scope: sentinelWorkspace
+    dependsOn: [sentinel]
     kind: 'Scheduled'
     properties: rule
   }
