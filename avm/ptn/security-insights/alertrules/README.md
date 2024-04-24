@@ -16,6 +16,7 @@ Implement alert rules for Security Insights
 | Resource Type | API Version |
 | :-- | :-- |
 | `Microsoft.OperationsManagement/solutions` | [2015-11-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.OperationsManagement/2015-11-01-preview/solutions) |
+| `Microsoft.SecurityInsights/alertRules` | [2023-02-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.SecurityInsights/2023-02-01-preview/alertRules) |
 
 ## Usage examples
 

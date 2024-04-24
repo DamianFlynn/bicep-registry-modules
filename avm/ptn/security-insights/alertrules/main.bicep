@@ -72,6 +72,17 @@ resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' 
     }
   }
 
+// Deploy rules
+
+resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-preview' = [
+  for (rule, index) in rules: {
+    name: rule.alertRuleTemplateName
+    scope: sentinelWorkspace
+    kind: 'Scheduled'
+    properties: rule
+  }
+]
+
 // ============ //
 // Outputs      //
 // ============ //
