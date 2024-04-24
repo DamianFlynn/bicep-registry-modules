@@ -15,10 +15,10 @@ param enableTelemetry bool = true
 // Add your parameters here
 //
 
-@description('The workspace ID of the Sentinel workspace we will be working with.')
+@description('Required. The workspace ID of the Sentinel workspace we will be working with.')
 param sentinelWorkspaceId string
 
-@description('An array of alert rules to create.')
+@description('Optional. An array of alert rules to create.')
 param rules array = []
 
 // ============== //
@@ -80,6 +80,9 @@ resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' 
 
 @description('The resource ID of the resource.')
 output resourceId string = sentinelWorkspace.id
+
+@description('The resource group of the resource.')
+output resourceGroupName string = resourceGroup().name
 
 @description('The name of the resource.')
 output name string = sentinelWorkspace.name
