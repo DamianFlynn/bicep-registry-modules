@@ -1,6 +1,6 @@
-# Sentinel Rules Deployment `[Microsoft.SecurityInsights/alertRules]`
+# Security Insights - Alert Rules `[Microsoft.SecurityInsights/alertRules]`
 
-The Pattern will deploy Sentinel Rules to a Log Analytics Workspace.
+Implement alert rules for Security Insights
 
 ## Navigation
 
@@ -16,7 +16,6 @@ The Pattern will deploy Sentinel Rules to a Log Analytics Workspace.
 | Resource Type | API Version |
 | :-- | :-- |
 | `Microsoft.OperationsManagement/solutions` | [2015-11-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.OperationsManagement/2015-11-01-preview/solutions) |
-| `Microsoft.SecurityInsights/alertRules` | [2023-02-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.SecurityInsights/2023-02-01-preview/alertRules) |
 
 ## Usage examples
 
@@ -26,13 +25,10 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/ptn/security-insights/alertrules:<version>`.
 
-- [Default Usage Scenario](#example-1-default-usage-scenario)
-- [WAF Usage Scenario](#example-2-waf-usage-scenario)
+- [Defaults](#example-1-defaults)
+- [Waf-Aligned](#example-2-waf-aligned)
 
-### Example 1: _Default Usage Scenario_
-
-This instance deploys the module with most of its features enabled.
-
+### Example 1: _Defaults_
 
 <details>
 
@@ -42,7 +38,12 @@ This instance deploys the module with most of its features enabled.
 module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   name: 'alertrulesDeployment'
   params: {
-
+    // Required parameters
+    name: 'siadef001'
+    sentinelWorkspaceId: '<sentinelWorkspaceId>'
+    // Non-required parameters
+    location: '<location>'
+    rules: '<rules>'
   }
 }
 ```
@@ -58,17 +59,29 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {}
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "siadef001"
+    },
+    "sentinelWorkspaceId": {
+      "value": "<sentinelWorkspaceId>"
+    },
+    // Non-required parameters
+    "location": {
+      "value": "<location>"
+    },
+    "rules": {
+      "value": "<rules>"
+    }
+  }
 }
 ```
 
 </details>
 <p>
 
-### Example 2: _WAF Usage Scenario_
-
-This instance deploys the module with WAF features enabled.
-
+### Example 2: _Waf-Aligned_
 
 <details>
 
@@ -78,7 +91,12 @@ This instance deploys the module with WAF features enabled.
 module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   name: 'alertrulesDeployment'
   params: {
-
+    // Required parameters
+    name: 'siawaf001'
+    sentinelWorkspaceId: '<sentinelWorkspaceId>'
+    // Non-required parameters
+    location: '<location>'
+    rules: '<rules>'
   }
 }
 ```
@@ -94,7 +112,22 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {}
+  "parameters": {
+    // Required parameters
+    "name": {
+      "value": "siawaf001"
+    },
+    "sentinelWorkspaceId": {
+      "value": "<sentinelWorkspaceId>"
+    },
+    // Non-required parameters
+    "location": {
+      "value": "<location>"
+    },
+    "rules": {
+      "value": "<rules>"
+    }
+  }
 }
 ```
 
@@ -108,7 +141,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`sentinelWorkspaceId`](#parameter-sentinelworkspaceid) | string | The ID of the Log Analytics workspace which we will be utilized for Azure Sentinel. |
+| [`name`](#parameter-name) | string | Name of the resource to create. |
 
 **Optional parameters**
 
@@ -116,11 +149,20 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 | :-- | :-- | :-- |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
-| [`rules`](#parameter-rules) | array | An array of rule objects to deploy. |
 
-### Parameter: `sentinelWorkspaceId`
+**The workspace ID of the Sentinel workspace we will be working with parameters**
 
-The ID of the Log Analytics workspace which we will be utilized for Azure Sentinel.
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+
+**An array of alert rules to create parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+
+### Parameter: `name`
+
+Name of the resource to create.
 
 - Required: Yes
 - Type: string
@@ -141,19 +183,6 @@ Location for all Resources.
 - Type: string
 - Default: `[resourceGroup().location]`
 
-### Parameter: `rules`
-
-An array of rule objects to deploy.
-
-- Required: No
-- Type: array
-- Default:
-  ```Bicep
-  [
-    {}
-  ]
-  ```
-
 
 ## Outputs
 
@@ -161,7 +190,7 @@ An array of rule objects to deploy.
 | :-- | :-- | :-- |
 | `location` | string | The location the resource was deployed into. |
 | `name` | string | The name of the resource. |
-| `resourceId` | string | The resource ID of the Sentinel Workspace resource. |
+| `resourceId` | string | The resource ID of the resource. |
 
 ## Cross-referenced modules
 

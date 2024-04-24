@@ -1,107 +1,23 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "3604286840026111347"
+      "templateHash": "14412661460878006828"
     },
-    "name": "Sentinel Rules Deployment",
-    "description": "The Pattern will deploy Sentinel Rules to a Log Analytics Workspace.",
-    "owner": "Innofactor/Azure-Modules"
-  },
-  "definitions": {
-    "FieldMapping": {
-      "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "string"
-        },
-        "columnName": {
-          "type": "string"
-        }
-      }
-    },
-    "EntityMapping": {
-      "type": "object",
-      "properties": {
-        "entityType": {
-          "type": "string"
-        },
-        "fieldMappings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/FieldMapping"
-          }
-        }
-      }
-    },
-    "Rule": {
-      "type": "object",
-      "properties": {
-        "displayName": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "query": {
-          "type": "string"
-        },
-        "queryPeriod": {
-          "type": "string"
-        },
-        "queryFrequency": {
-          "type": "string"
-        },
-        "triggerOperator": {
-          "type": "string"
-        },
-        "triggerThreshold": {
-          "type": "int"
-        },
-        "severity": {
-          "type": "string"
-        },
-        "suppressionEnabled": {
-          "type": "bool"
-        },
-        "suppressionDuration": {
-          "type": "string"
-        },
-        "enabled": {
-          "type": "bool"
-        },
-        "tactics": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "techniques": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "entityMappings": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/EntityMapping"
-          }
-        },
-        "alertRuleTemplateName": {
-          "type": "string"
-        },
-        "templateVersion": {
-          "type": "string"
-        }
-      }
-    }
+    "name": "Security Insights - Alert Rules",
+    "description": "Implement alert rules for Security Insights",
+    "owner": "InnofactorOrg/module-maintainers"
   },
   "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Required. Name of the resource to create."
+      }
+    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -119,25 +35,23 @@
     "sentinelWorkspaceId": {
       "type": "string",
       "metadata": {
-        "description": "Required. The ID of the Log Analytics workspace which we will be utilized for Azure Sentinel."
+        "description": "The workspace ID of the Sentinel workspace we will be working with."
       }
     },
     "rules": {
       "type": "array",
-      "defaultValue": [
-        {}
-      ],
+      "defaultValue": [],
       "metadata": {
-        "description": "Optional. An array of rule objects to deploy."
+        "description": "An array of alert rules to create."
       }
     }
   },
-  "resources": {
-    "avmTelemetry": {
+  "resources": [
+    {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2023-07-01",
-      "name": "[format('46d3xbcp.innofactor-ptn-sentinel-rules.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
+      "name": "[format('46d3xbcp.securityinsights-alertrules.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -153,14 +67,7 @@
         }
       }
     },
-    "sentinelWorkspace": {
-      "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
-      "existing": true,
-      "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2022-10-01",
-      "name": "[last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))]"
-    },
-    "sentinel": {
+    {
       "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
       "type": "Microsoft.OperationsManagement/solutions",
       "apiVersion": "2015-11-01-preview",
@@ -174,32 +81,14 @@
         "product": "OMSGallery/SecurityInsights",
         "promotionCode": "",
         "publisher": "Microsoft"
-      },
-      "dependsOn": [
-        "sentinelWorkspace"
-      ]
-    },
-    "scheduledAlertRules": {
-      "copy": {
-        "name": "scheduledAlertRules",
-        "count": "[length(parameters('rules'))]"
-      },
-      "type": "Microsoft.SecurityInsights/alertRules",
-      "apiVersion": "2023-02-01-preview",
-      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
-      "name": "[parameters('rules')[copyIndex()].alertRuleTemplateName]",
-      "kind": "Scheduled",
-      "properties": "[parameters('rules')[copyIndex()]]",
-      "dependsOn": [
-        "sentinelWorkspace"
-      ]
+      }
     }
-  },
+  ],
   "outputs": {
     "resourceId": {
       "type": "string",
       "metadata": {
-        "description": "The resource ID of the Sentinel Workspace resource."
+        "description": "The resource ID of the resource."
       },
       "value": "[resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]"
     },
@@ -215,7 +104,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('sentinelWorkspace', '2022-10-01', 'full').location]"
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))), '2022-10-01', 'full').location]"
     }
   }
 }
