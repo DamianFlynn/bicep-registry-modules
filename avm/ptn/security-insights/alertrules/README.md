@@ -43,7 +43,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   name: 'alertrulesDeployment'
   params: {
     // Required parameters
-    name: 'rule.alertRuleTemplateName'
+    name: 'csocmin001'
     sentinelWorkspaceId: '<sentinelWorkspaceId>'
     // Non-required parameters
     location: '<location>'
@@ -66,7 +66,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
   "parameters": {
     // Required parameters
     "name": {
-      "value": "rule.alertRuleTemplateName"
+      "value": "csocmin001"
     },
     "sentinelWorkspaceId": {
       "value": "<sentinelWorkspaceId>"
