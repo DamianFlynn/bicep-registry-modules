@@ -76,10 +76,9 @@ resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' 
 
 resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-preview' = [
   for (rule, index) in rules: {
-    name: rule.id
+    name: rule.name
     scope: sentinelWorkspace
-    dependsOn: [sentinel]
-    kind: 'Scheduled'
+    kind: rule.kind
     properties: rule.properties
   }
 ]

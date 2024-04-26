@@ -108,12 +108,6 @@ param alertRules array = [
 // Dependencies //
 // ============ //
 
-// Load and parse the JSON content
-// var loadedRuleDefination = string(loadTextContent('./configuration/analytics-library/Azure_Activity/New CloudShell User.yaml'))
-// var ootbRules = loadJsonContent('../../../configuration/rules/scheduled/New CloudShell User.json')
-
-// var combinedRules = union(rules, [ootbRules])
-
 // General resources
 // =================
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -141,6 +135,7 @@ module diagnostics '../../../../../../utilities/e2e-template-assets/templates/di
 // Test Execution //
 // ============== //
 
+// Load and parse the rule set we are to work with
 var combinedRules = union(alertRules, overideRules)
 
 @batchSize(1)
