@@ -1,4 +1,4 @@
-name: "avm.ptn.authorization.role-assignment"
+name: "avm.res.relay.namespace"
 
 on:
   schedule:
@@ -26,15 +26,15 @@ on:
     paths:
       - ".github/actions/templates/avm-**"
       - ".github/workflows/avm.template.module.yml"
-      - ".github/workflows/avm.ptn.authorization.role-assignment.yml"
-      - "avm/ptn/authorization/role-assignment/**"
+      - ".github/workflows/avm.ptn.security-insights.alertrules.yml"
+      - "avm/ptn/security-insights/alertrules/**"
       - "avm/utilities/pipelines/**"
       - "!avm/utilities/pipelines/platform/**"
       - "!*/**/README.md"
 
 env:
-  modulePath: "avm/ptn/authorization/role-assignment"
-  workflowPath: ".github/workflows/avm.ptn.authorization.role-assignment.yml"
+  modulePath: "avm/ptn/security-insights/alertrules"
+  workflowPath: ".github/workflows/avm.ptn.security-insights.alertrules.yml"
 
 concurrency:
   group: ${{ github.workflow }}
