@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Well Architected Configuration'
 metadata description = 'Implement alert rules for Security Insights using a WAF Compliant configuration.'
-metadata owner = '@InnofactorOrg/azure-solutions-securityinsights-alertrules-module-owners'
+metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
 // Parameters //
