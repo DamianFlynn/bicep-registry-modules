@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Default Configuration'
 metadata description = 'Implement alert rules for Security Insights using a default configuration.'
-metadata owner = 'InnofactorOrg/module-maintainers'
+metadata owner = '@InnofactorOrg/azure-solutions-securityinsights-alertrules-module-owners'
 
 // ========== //
 // Parameters //

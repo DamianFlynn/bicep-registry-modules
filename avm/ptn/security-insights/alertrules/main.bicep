@@ -1,6 +1,6 @@
 metadata name = 'Security Insights - Alert Rules'
 metadata description = 'Implement alert rules for Security Insights'
-metadata owner = 'InnofactorOrg/module-maintainers'
+metadata owner = '@InnofactorOrg/azure-solutions-securityinsights-alertrules-module-owners'
 
 @description('Required. Name of the resource to create.')
 param name string

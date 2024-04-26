@@ -1137,7 +1137,7 @@ Describe 'Governance tests' {
     $formattedEntry = $relativeModulePath -replace '\\', '\/'
     $moduleLine = $codeOwnersContent | Where-Object { $_ -match "^\s*\/$formattedEntry\/" }
 
-    $expectedEntry = '/{0}/ @Azure/{1}-module-owners-bicep @Azure/avm-core-team-technical-bicep' -f ($relativeModulePath -replace '\\', '/'), ($relativeModulePath -replace '-' -replace '[\\|\/]', '-')
+    $expectedEntry = '/{0}/ @InnofactorOrg/azure-solutions-{1}-module-owners @InnofactorOrg/azure-solutions-core-team-technical' -f ($relativeModulePath -replace '\\', '/'), ($relativeModulePath -replace '-' -replace '[\\|\/]', '-')
 
     # Line should exist
     $moduleLine | Should -Not -BeNullOrEmpty -Because "the module should be listed in the [CODEOWNERS](https://azure.github.io/Azure-Verified-Modules/specs/shared/#codeowners-file) file as [/$expectedEntry]."

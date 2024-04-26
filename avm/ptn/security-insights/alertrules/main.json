@@ -5,11 +5,11 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.54.24096",
-      "templateHash": "2906652416506426592"
+      "templateHash": "15045274922061044629"
     },
     "name": "Security Insights - Alert Rules",
     "description": "Implement alert rules for Security Insights",
-    "owner": "InnofactorOrg/module-maintainers"
+    "owner": "@InnofactorOrg/azure-solutions-securityinsights-alertrules-module-owners"
   },
   "parameters": {
     "name": {
