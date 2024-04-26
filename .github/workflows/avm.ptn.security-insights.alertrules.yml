@@ -1,4 +1,4 @@
-name: "avm.res.relay.namespace"
+name: "avm.ptn.security-insights.alert-rules"
 
 on:
   schedule:
