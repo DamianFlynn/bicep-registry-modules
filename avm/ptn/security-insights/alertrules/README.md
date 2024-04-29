@@ -15,6 +15,7 @@ Implement alert rules for Security Insights
 
 | Resource Type | API Version |
 | :-- | :-- |
+| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.OperationsManagement/solutions` | [2015-11-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.OperationsManagement/2015-11-01-preview/solutions) |
 | `Microsoft.SecurityInsights/alertRules` | [2023-02-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.SecurityInsights/2023-02-01-preview/alertRules) |
 
@@ -157,7 +158,9 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 | :-- | :-- | :-- |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location for all Resources. |
+| [`lock`](#parameter-lock) | object | The lock settings of the service. |
 | [`rules`](#parameter-rules) | array | An array of alert rules to create. |
+| [`tags`](#parameter-tags) | object | Tags of the storage account resource. |
 
 ### Parameter: `name`
 
@@ -189,6 +192,42 @@ Location for all Resources.
 - Type: string
 - Default: `[resourceGroup().location]`
 
+### Parameter: `lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-lockname) | string | Specify the name of lock. |
+
+### Parameter: `lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
+
 ### Parameter: `rules`
 
 An array of alert rules to create.
@@ -196,6 +235,13 @@ An array of alert rules to create.
 - Required: No
 - Type: array
 - Default: `[]`
+
+### Parameter: `tags`
+
+Tags of the storage account resource.
+
+- Required: No
+- Type: object
 
 
 ## Outputs
