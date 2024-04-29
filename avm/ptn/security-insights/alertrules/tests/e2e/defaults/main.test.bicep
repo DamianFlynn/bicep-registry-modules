@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Default Configuration'
 metadata description = 'Implement alert rules for Security Insights using a default configuration.'
-metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
+metadata owner = '@InnofactorOrg/azure-solutions-#_namePrefix_#-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
 // Parameters //
@@ -20,12 +20,12 @@ param resourceLocation string = deployment().location
 param serviceShort string = 'csocmin'
 
 @description('Optional. A token to inject into the name of each resource. This value can be automatically injected by the CI.')
-param namePrefix string = 'avm'
+param namePrefix string = '#_namePrefix_#'
 
 @description('Optional. An array of rules to deploy for Azure Sentinel.')
 param overideRules array = [
   {
-    id: '/subscriptions/a39403bb-a54d-4edf-a44e-83a4249d0f4a/resourceGroups/dep-avm-securityinsights-alertrules-csocmin-rg/providers/Microsoft.OperationalInsights/workspaces/dep-avm-law-csocmin/providers/Microsoft.SecurityInsights/AlertRuleTemplates/223db5c1-1bf8-47d8-8806-bed401b356a4'
+    id: '/subscriptions/#_subscriptionId_#/resourceGroups/dep-#_namePrefix_#-securityinsights-alertrules-csocmin-rg/providers/Microsoft.OperationalInsights/workspaces/dep-#_namePrefix_#-law-csocmin/providers/Microsoft.SecurityInsights/AlertRuleTemplates/223db5c1-1bf8-47d8-8806-bed401b356a4'
     name: '223db5c1-1bf8-47d8-8806-bed401b356a4'
     type: 'Microsoft.SecurityInsights/AlertRuleTemplates'
     kind: 'Scheduled'
