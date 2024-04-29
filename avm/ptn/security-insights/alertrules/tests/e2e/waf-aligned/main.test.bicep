@@ -138,6 +138,14 @@ module testDeployment '../../../main.bicep' = [
       location: resourceLocation
       sentinelWorkspaceId: diagnostics.outputs.logAnalyticsWorkspaceResourceId
       rules: alertRules
+      lock: {
+        kind: 'None'
+      }
+      tags: {
+        'hidden-title': 'This is visible in the resource name'
+        Environment: 'Non-Prod'
+        Role: 'DeploymentValidation'
+      }
     }
   }
 ]

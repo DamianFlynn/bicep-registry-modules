@@ -48,7 +48,15 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
     sentinelWorkspaceId: '<sentinelWorkspaceId>'
     // Non-required parameters
     location: '<location>'
+    lock: {
+      kind: 'None'
+    }
     rules: '<rules>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
   }
 }
 ```
@@ -76,8 +84,20 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
     "location": {
       "value": "<location>"
     },
+    "lock": {
+      "value": {
+        "kind": "None"
+      }
+    },
     "rules": {
       "value": "<rules>"
+    },
+    "tags": {
+      "value": {
+        "Environment": "Non-Prod",
+        "hidden-title": "This is visible in the resource name",
+        "Role": "DeploymentValidation"
+      }
     }
   }
 }
@@ -104,7 +124,15 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
     sentinelWorkspaceId: '<sentinelWorkspaceId>'
     // Non-required parameters
     location: '<location>'
+    lock: {
+      kind: 'None'
+    }
     rules: '<rules>'
+    tags: {
+      Environment: 'Non-Prod'
+      'hidden-title': 'This is visible in the resource name'
+      Role: 'DeploymentValidation'
+    }
   }
 }
 ```
@@ -132,8 +160,20 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
     "location": {
       "value": "<location>"
     },
+    "lock": {
+      "value": {
+        "kind": "None"
+      }
+    },
     "rules": {
       "value": "<rules>"
+    },
+    "tags": {
+      "value": {
+        "Environment": "Non-Prod",
+        "hidden-title": "This is visible in the resource name",
+        "Role": "DeploymentValidation"
+      }
     }
   }
 }
