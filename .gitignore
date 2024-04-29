@@ -5,3 +5,6 @@ last-moduleIndex.json
 generated-moduleIndex.json
 .DS_Store
 avm/ptn/security-insights/alertrules/configuration/rules/**/*.json
+!avm/ptn/security-insights/alertrules/configuration/rules/scheduled/Account added and removed from privileged groups.json
+!avm/ptn/security-insights/alertrules/configuration/rules/scheduled/User Added to Admin Role.json
+!avm/ptn/security-insights/alertrules/configuration/rules/scheduled/User impersonation by Identity Protection alerts.json
