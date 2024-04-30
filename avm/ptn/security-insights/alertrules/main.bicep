@@ -100,6 +100,7 @@ resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-p
     kind: rule.kind
     properties: rule.properties
     tags: tags
+    dependsOn: [sentinel]
   }
 ]
 
