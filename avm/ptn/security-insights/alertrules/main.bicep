@@ -1,6 +1,6 @@
 metadata name = 'Security Insights - Alert Rules'
 metadata description = 'Implement alert rules for Security Insights'
-metadata owner = 'InnofactorOrg/module-maintainers'
+metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
 
 @description('Required. Name of the resource to create.')
 param name string
@@ -10,6 +10,12 @@ param location string = resourceGroup().location
 
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
+
+@description('Optional. The lock settings of the service.')
+param lock lockType
+
+@description('Optional. Tags of the storage account resource.')
+param tags object?
 
 //
 // Add your parameters here
@@ -27,7 +33,7 @@ param rules array = []
 
 resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
   if (enableTelemetry) {
-    name: '46d3xbcp.securityinsights-alertrules.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
+    name: '46d3xbcp.ptn.securityinsights-alertrules.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
     properties: {
       mode: 'Incremental'
       template: {
@@ -48,6 +54,18 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2023-07-01' =
 // Add your resources here
 //
 
+resource sentinel_lock 'Microsoft.Authorization/locks@2020-05-01' =
+  if (!empty(lock ?? {}) && lock.?kind != 'None') {
+    name: lock.?name ?? 'lock-${name}'
+    properties: {
+      level: lock.?kind ?? ''
+      notes: lock.?kind == 'CanNotDelete'
+        ? 'Cannot delete resource or child resources.'
+        : 'Cannot delete or modify the resource or child resources.'
+    }
+    scope: sentinelWorkspace
+  }
+
 // Get the existing Sentinel workspace
 
 resource sentinelWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing =
@@ -61,6 +79,7 @@ resource sentinel 'Microsoft.OperationsManagement/solutions@2015-11-01-preview' 
   if (!empty(sentinelWorkspaceId) && !empty(rules)) {
     name: 'SecurityInsights(${sentinelWorkspace.name})'
     location: location
+    tags: tags
     properties: {
       workspaceResourceId: sentinelWorkspace.id
     }
@@ -80,6 +99,8 @@ resource scheduledAlertRules 'Microsoft.SecurityInsights/alertRules@2023-02-01-p
     scope: sentinelWorkspace
     kind: rule.kind
     properties: rule.properties
+    tags: tags
+    dependsOn: [sentinel]
   }
 ]
 
@@ -107,3 +128,11 @@ output location string = sentinelWorkspace.location
 //
 // Add your User-defined-types here, if any
 //
+
+type lockType = {
+  @description('Optional. Specify the name of lock.')
+  name: string?
+
+  @description('Optional. Specify the type of lock.')
+  kind: ('CanNotDelete' | 'ReadOnly' | 'None')?
+}?

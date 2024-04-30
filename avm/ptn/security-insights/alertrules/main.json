@@ -1,15 +1,43 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "2.0",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.26.54.24096",
-      "templateHash": "2906652416506426592"
+      "version": "0.26.170.59819",
+      "templateHash": "12246776766606361335"
     },
     "name": "Security Insights - Alert Rules",
     "description": "Implement alert rules for Security Insights",
-    "owner": "InnofactorOrg/module-maintainers"
+    "owner": "@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners"
+  },
+  "definitions": {
+    "lockType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the name of lock."
+          }
+        },
+        "kind": {
+          "type": "string",
+          "allowedValues": [
+            "CanNotDelete",
+            "None",
+            "ReadOnly"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Specify the type of lock."
+          }
+        }
+      },
+      "nullable": true
+    }
   },
   "parameters": {
     "name": {
@@ -32,6 +60,19 @@
         "description": "Optional. Enable/Disable usage telemetry for module."
       }
     },
+    "lock": {
+      "$ref": "#/definitions/lockType",
+      "metadata": {
+        "description": "Optional. The lock settings of the service."
+      }
+    },
+    "tags": {
+      "type": "object",
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. Tags of the storage account resource."
+      }
+    },
     "sentinelWorkspaceId": {
       "type": "string",
       "metadata": {
@@ -46,12 +87,12 @@
       }
     }
   },
-  "resources": [
-    {
+  "resources": {
+    "avmTelemetry": {
       "condition": "[parameters('enableTelemetry')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2023-07-01",
-      "name": "[format('46d3xbcp.securityinsights-alertrules.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
+      "name": "[format('46d3xbcp.ptn.securityinsights-alertrules.{0}.{1}', replace('-..--..-', '.', '-'), substring(uniqueString(deployment().name, parameters('location')), 0, 4))]",
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -67,12 +108,34 @@
         }
       }
     },
-    {
+    "sentinel_lock": {
+      "condition": "[and(not(empty(coalesce(parameters('lock'), createObject()))), not(equals(tryGet(parameters('lock'), 'kind'), 'None')))]",
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
+      "name": "[coalesce(tryGet(parameters('lock'), 'name'), format('lock-{0}', parameters('name')))]",
+      "properties": {
+        "level": "[coalesce(tryGet(parameters('lock'), 'kind'), '')]",
+        "notes": "[if(equals(tryGet(parameters('lock'), 'kind'), 'CanNotDelete'), 'Cannot delete resource or child resources.', 'Cannot delete or modify the resource or child resources.')]"
+      },
+      "dependsOn": [
+        "sentinelWorkspace"
+      ]
+    },
+    "sentinelWorkspace": {
+      "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
+      "existing": true,
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))]"
+    },
+    "sentinel": {
       "condition": "[and(not(empty(parameters('sentinelWorkspaceId'))), not(empty(parameters('rules'))))]",
       "type": "Microsoft.OperationsManagement/solutions",
       "apiVersion": "2015-11-01-preview",
       "name": "[format('SecurityInsights({0})', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
       "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
       "properties": {
         "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]"
       },
@@ -81,9 +144,12 @@
         "product": "OMSGallery/SecurityInsights",
         "promotionCode": "",
         "publisher": "Microsoft"
-      }
+      },
+      "dependsOn": [
+        "sentinelWorkspace"
+      ]
     },
-    {
+    "scheduledAlertRules": {
       "copy": {
         "name": "scheduledAlertRules",
         "count": "[length(parameters('rules'))]"
@@ -93,9 +159,14 @@
       "scope": "[format('Microsoft.OperationalInsights/workspaces/{0}', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/')))]",
       "name": "[parameters('rules')[copyIndex()].name]",
       "kind": "[parameters('rules')[copyIndex()].kind]",
-      "properties": "[parameters('rules')[copyIndex()].properties]"
+      "properties": "[parameters('rules')[copyIndex()].properties]",
+      "tags": "[parameters('tags')]",
+      "dependsOn": [
+        "sentinel",
+        "sentinelWorkspace"
+      ]
     }
-  ],
+  },
   "outputs": {
     "resourceId": {
       "type": "string",
@@ -123,7 +194,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', last(split(if(not(empty(parameters('sentinelWorkspaceId'))), parameters('sentinelWorkspaceId'), 'law'), '/'))), '2022-10-01', 'full').location]"
+      "value": "[reference('sentinelWorkspace', '2022-10-01', 'full').location]"
     }
   }
 }

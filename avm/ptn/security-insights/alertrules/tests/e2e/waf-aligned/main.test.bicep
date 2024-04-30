@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Well Architected Configuration'
 metadata description = 'Implement alert rules for Security Insights using a WAF Compliant configuration.'
-metadata owner = 'InnofactorOrg/module-maintainers'
+metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
 // Parameters //
@@ -138,6 +138,14 @@ module testDeployment '../../../main.bicep' = [
       location: resourceLocation
       sentinelWorkspaceId: diagnostics.outputs.logAnalyticsWorkspaceResourceId
       rules: alertRules
+      lock: {
+        kind: 'None'
+      }
+      tags: {
+        'hidden-title': 'This is visible in the resource name'
+        Environment: 'Non-Prod'
+        Role: 'DeploymentValidation'
+      }
     }
   }
 ]

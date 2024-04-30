@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Default Configuration'
 metadata description = 'Implement alert rules for Security Insights using a default configuration.'
-metadata owner = 'InnofactorOrg/module-maintainers'
+metadata owner = '@InnofactorOrg/azure-solutions-#_namePrefix_#-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
 // Parameters //
@@ -99,7 +99,6 @@ param overideRules array = [
 @description('Optional. An array of rules to deploy for Azure Sentinel.')
 param alertRules array = [
   loadJsonContent('../../../configuration/rules/scheduled/Account added and removed from privileged groups.json')
-  loadJsonContent('../../../configuration/rules/scheduled/Account added and removed from privileged groups.json')
   loadJsonContent('../../../configuration/rules/scheduled/User Added to Admin Role.json')
   loadJsonContent('../../../configuration/rules/scheduled/User impersonation by Identity Protection alerts.json')
 ]
@@ -149,6 +148,14 @@ module testDeployment '../../../main.bicep' = [
       location: resourceLocation
       sentinelWorkspaceId: diagnostics.outputs.logAnalyticsWorkspaceResourceId
       rules: combinedRules
+      lock: {
+        kind: 'None'
+      }
+      tags: {
+        'hidden-title': 'This is visible in the resource name'
+        Environment: 'Non-Prod'
+        Role: 'DeploymentValidation'
+      }
     }
   }
 ]
