@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.26.170.59819",
-      "templateHash": "15280285796599985647"
+      "templateHash": "12246776766606361335"
     },
     "name": "Security Insights - Alert Rules",
     "description": "Implement alert rules for Security Insights",
@@ -162,6 +162,7 @@
       "properties": "[parameters('rules')[copyIndex()].properties]",
       "tags": "[parameters('tags')]",
       "dependsOn": [
+        "sentinel",
         "sentinelWorkspace"
       ]
     }
