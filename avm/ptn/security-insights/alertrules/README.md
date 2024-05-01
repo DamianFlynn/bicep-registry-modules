@@ -1,6 +1,6 @@
 # Security Insights - Alert Rules `[Microsoft.SecurityInsights/alertRules]`
 
-Implement alert rules for Security Insights
+This Bicep module streamlines the configuration of Azure Sentinel by encompassing critical functionalities such as resource locking, Sentinel solution deployment, and alert rule setup within a Sentinel workspace. Key components include sentinel_lock for resource protection, sentinelWorkspace for existing workspace referencing, sentinel for solution deployment, and scheduledAlertRules for dynamic alert rule deployment. Tailored for flexibility, it adapts to input parameters to conditionally deploy resources, ensuring efficient setup and management of Azure Sentinel environments.
 
 ## Navigation
 
@@ -32,7 +32,7 @@ The following section provides usage examples for the module, which were used to
 
 ### Example 1: _Security Insights - Alert Rules Default Configuration_
 
-Implement alert rules for Security Insights using a default configuration.
+This sample Bicep file demonstrates how to utilize the alertRules module to deploy predefined alert rules to an Azure Sentinel workspace. The Bicep file dynamically loads alert rules from source JSON or YAML files using the loadJsonContent or loadYamlContent functions, respectively. Additionally, it allows for the inclusion of customer-specific rules or overrides via a secondary array. Both arrays are combined using the native Bicep union function before being passed to the module for application.
 
 
 <details>
@@ -108,7 +108,7 @@ module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
 
 ### Example 2: _Security Insights - Alert Rules Well Architected Configuration_
 
-Implement alert rules for Security Insights using a WAF Compliant configuration.
+This sample Bicep file demonstrates the deployment of Azure Sentinel alert rules using the AlertRules module. The Bicep file utilizes the alertRules array to dynamically load alert rules from their source JSON or YAML files during compile time, leveraging Biceps loadJsonContent or loadYamlContent functions. Moreover, the module is configured to implement the recommended Well Architected Features for efficient deployment and management of alert rules in an Azure Sentinel workspace.
 
 
 <details>
