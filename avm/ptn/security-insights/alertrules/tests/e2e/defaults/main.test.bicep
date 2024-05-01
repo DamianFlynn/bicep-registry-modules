@@ -98,9 +98,9 @@ param overideRules array = [
 
 @description('Optional. An array of rules to deploy for Azure Sentinel.')
 param alertRules array = [
-  loadJsonContent('../../../configuration/rules/scheduled/Account added and removed from privileged groups.json')
-  loadJsonContent('../../../configuration/rules/scheduled/User Added to Admin Role.json')
-  loadJsonContent('../../../configuration/rules/scheduled/User impersonation by Identity Protection alerts.json')
+  // loadJsonContent('../../../configuration/rules/scheduled/Account added and removed from privileged groups.json')
+  // loadJsonContent('../../../configuration/rules/scheduled/User Added to Admin Role.json')
+  // loadJsonContent('../../../configuration/rules/scheduled/User impersonation by Identity Protection alerts.json')
 ]
 
 // ============ //
