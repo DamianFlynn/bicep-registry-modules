@@ -18,7 +18,7 @@ param resourceLocation string = deployment().location
 param serviceShort string = 'dbgwaf'
 
 @description('Optional. A token to inject into the name of each resource. This value can be automatically injected by the CI.')
-param namePrefix string = '#_namePrefix_#'
+param namePrefix string = 'avm'
 
 // ============ //
 // Dependencies //
@@ -114,6 +114,11 @@ module testDeployment '../../../main.bicep' = [
             'Microsoft.Authorization/roleDefinitions',
             'acdd72a7-3385-48ef-bd42-f606fba81ae7'
           )
+          principalId: nestedDependencies.outputs.managedIdentityPrincipalId
+          principalType: 'ServicePrincipal'
+        }
+        {
+          roleDefinitionIdOrName: 'GrafanaAdmin'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
         }
