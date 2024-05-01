@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Well Architected Configuration'
-metadata description = 'Implement alert rules for Security Insights using a WAF Compliant configuration.'
+metadata description = 'This sample Bicep file demonstrates the deployment of Azure Sentinel alert rules using the AlertRules module. The Bicep file utilizes the alertRules array to dynamically load alert rules from their source JSON or YAML files during compile time, leveraging Biceps loadJsonContent or loadYamlContent functions. Moreover, the module is configured to implement the recommended Well Architected Features for efficient deployment and management of alert rules in an Azure Sentinel workspace.'
 metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
@@ -25,7 +25,6 @@ param namePrefix string = '#_namePrefix_#'
 @description('Optional. An array of rules to deploy for Azure Sentinel.')
 param alertRules array = [
   {
-    id: '/subscriptions/#_subscriptionId_#/resourceGroups/dep-#_namePrefix_#-securityinsights-alertrules-csocmin-rg/providers/Microsoft.OperationalInsights/workspaces/dep-#_namePrefix_#-law-csocmin/providers/Microsoft.SecurityInsights/AlertRuleTemplates/223db5c1-1bf8-47d8-8806-bed401b356a4'
     name: '223db5c1-1bf8-47d8-8806-bed401b356a4'
     type: 'Microsoft.SecurityInsights/AlertRuleTemplates'
     kind: 'Scheduled'

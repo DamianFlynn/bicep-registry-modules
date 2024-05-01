@@ -1,6 +1,6 @@
 targetScope = 'subscription'
 metadata name = 'Security Insights - Alert Rules Default Configuration'
-metadata description = 'Implement alert rules for Security Insights using a default configuration.'
+metadata description = 'This sample Bicep file demonstrates how to utilize the alertRules module to deploy predefined alert rules to an Azure Sentinel workspace. The Bicep file dynamically loads alert rules from source JSON or YAML files using the loadJsonContent or loadYamlContent functions, respectively. Additionally, it allows for the inclusion of customer-specific rules or overrides via a secondary array. Both arrays are combined using the native Bicep union function before being passed to the module for application.'
 metadata owner = '@InnofactorOrg/azure-solutions-#_namePrefix_#-ptn-securityinsights-alertrules-module-owners'
 
 // ========== //
@@ -25,7 +25,6 @@ param namePrefix string = '#_namePrefix_#'
 @description('Optional. An array of rules to deploy for Azure Sentinel.')
 param overideRules array = [
   {
-    id: '/subscriptions/#_subscriptionId_#/resourceGroups/dep-#_namePrefix_#-securityinsights-alertrules-csocmin-rg/providers/Microsoft.OperationalInsights/workspaces/dep-#_namePrefix_#-law-csocmin/providers/Microsoft.SecurityInsights/AlertRuleTemplates/223db5c1-1bf8-47d8-8806-bed401b356a4'
     name: '223db5c1-1bf8-47d8-8806-bed401b356a4'
     type: 'Microsoft.SecurityInsights/AlertRuleTemplates'
     kind: 'Scheduled'

@@ -1,5 +1,5 @@
 metadata name = 'Security Insights - Alert Rules'
-metadata description = 'Implement alert rules for Security Insights'
+metadata description = 'This Bicep module streamlines the configuration of Azure Sentinel by encompassing critical functionalities such as resource locking, Sentinel solution deployment, and alert rule setup within a Sentinel workspace. Key components include sentinel_lock for resource protection, sentinelWorkspace for existing workspace referencing, sentinel for solution deployment, and scheduledAlertRules for dynamic alert rule deployment. Tailored for flexibility, it adapts to input parameters to conditionally deploy resources, ensuring efficient setup and management of Azure Sentinel environments.'
 metadata owner = '@InnofactorOrg/azure-solutions-avm-ptn-securityinsights-alertrules-module-owners'
 
 @description('Required. Name of the resource to create.')
