@@ -1,4 +1,4 @@
-name: "avm.ptn.security-insights.alert-rules"
+name: "avm.res.security-insights.alert-rules"
 
 on:
   schedule:
@@ -26,15 +26,15 @@ on:
     paths:
       - ".github/actions/templates/avm-**"
       - ".github/workflows/avm.template.module.yml"
-      - ".github/workflows/avm.ptn.security-insights.alertrules.yml"
-      - "avm/ptn/security-insights/alertrules/**"
+      - ".github/workflows/avm.res.security-insights.alert-rules.yml"
+      - "avm/res/security-insights/alert-rules/**"
       - "avm/utilities/pipelines/**"
       - "!avm/utilities/pipelines/platform/**"
       - "!*/**/README.md"
 
 env:
-  modulePath: "avm/ptn/security-insights/alertrules"
-  workflowPath: ".github/workflows/avm.ptn.security-insights.alertrules.yml"
+  modulePath: "avm/res/security-insights/alert-rules"
+  workflowPath: ".github/workflows/avm.res.security-insights.alert-rules.yml"
 
 concurrency:
   group: ${{ github.workflow }}

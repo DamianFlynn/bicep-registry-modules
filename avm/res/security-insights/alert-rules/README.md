@@ -25,7 +25,7 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: Each example lists all the required parameters first, followed by the rest - each in alphabetical order.
 
->**Note**: To reference the module, please use the following syntax `br/public:avm/ptn/security-insights/alertrules:<version>`.
+>**Note**: To reference the module, please use the following syntax `br/public:avm/res/security-insights/alert-rules:<version>`.
 
 - [Security Insights - Alert Rules Default Configuration](#example-1-security-insights---alert-rules-default-configuration)
 - [Security Insights - Alert Rules Well Architected Configuration](#example-2-security-insights---alert-rules-well-architected-configuration)
@@ -40,8 +40,8 @@ This sample Bicep file demonstrates how to utilize the alertRules module to depl
 <summary>via Bicep module</summary>
 
 ```bicep
-module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
-  name: 'alertrulesDeployment'
+module alertRules 'br/public:avm/res/security-insights/alert-rules:<version>' = {
+  name: 'alertRulesDeployment'
   params: {
     // Required parameters
     name: 'csocmin001'
@@ -116,8 +116,8 @@ This sample Bicep file demonstrates the deployment of Azure Sentinel alert rules
 <summary>via Bicep module</summary>
 
 ```bicep
-module alertrules 'br/public:avm/ptn/security-insights/alertrules:<version>' = {
-  name: 'alertrulesDeployment'
+module alertRules 'br/public:avm/res/security-insights/alert-rules:<version>' = {
+  name: 'alertRulesDeployment'
   params: {
     // Required parameters
     name: 'csocwaf001'
