@@ -50,8 +50,8 @@ param publicNetworkAccess string?
 @description('Optional. Whether a Grafana instance uses deterministic outbound IPs for this instancey.')
 param deterministicOutboundIP string = 'Disabled'
 
-// @description('Optional. The managed identity definition for this resource.')
-// param managedIdentities managedIdentitiesType
+@description('Optional. The managed identity definition for this resource.')
+param managedIdentities managedIdentitiesType
 
 @description('Optional. Tags of the resource.')
 param tags object?
@@ -66,21 +66,21 @@ param diagnosticSettings diagnosticSettingType
 // Add your parameters here
 //
 
-// var formattedUserAssignedIdentities = reduce(
-//   map((managedIdentities.?userAssignedResourceIds ?? []), (id) => { '${id}': {} }),
-//   {},
-//   (cur, next) => union(cur, next)
-// ) // Converts the flat array to an object like { '${id1}': {}, '${id2}': {} }
+var formattedUserAssignedIdentities = reduce(
+  map((managedIdentities.?userAssignedResourceIds ?? []), (id) => { '${id}': {} }),
+  {},
+  (cur, next) => union(cur, next)
+) // Converts the flat array to an object like { '${id1}': {}, '${id2}': {} }
 
-// #disable-next-line BCP321 // Value will not be used if null or empty
-// var identity = !empty(managedIdentities)
-//   ? {
-//       type: ((managedIdentities.?systemAssigned ?? false))
-//         ? (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned')
-//         : (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'UserAssigned' : null)
-//       userAssignedIdentities: !empty(formattedUserAssignedIdentities) ? formattedUserAssignedIdentities : null
-//     }
-//   : null
+#disable-next-line BCP321 // Value will not be used if null or empty
+var identity = !empty(managedIdentities)
+  ? {
+      type: ((managedIdentities.?systemAssigned ?? false))
+        ? (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'SystemAssigned, UserAssigned' : 'SystemAssigned')
+        : (!empty(managedIdentities.?userAssignedResourceIds ?? {}) ? 'UserAssigned' : null)
+      userAssignedIdentities: !empty(formattedUserAssignedIdentities) ? formattedUserAssignedIdentities : null
+    }
+  : null
 
 var builtInRoleNames = {
   GrafanaAdmin: subscriptionResourceId(
@@ -139,7 +139,7 @@ resource grafana 'Microsoft.Dashboard/grafana@2023-09-01' = {
   name: name
   location: location
   tags: tags
-  // identity: identity
+  identity: identity
   sku: {
     name: grafanaSku
   }
@@ -243,13 +243,13 @@ output location string = grafana.location
 // Add your User-defined-types here, if any
 //
 
-// type managedIdentitiesType = {
-//   @description('Optional. Enables system assigned managed identity on the resource.')
-//   systemAssigned: bool?
+type managedIdentitiesType = {
+  @description('Optional. Enables system assigned managed identity on the resource.')
+  systemAssigned: bool?
 
-//   @description('Optional. The resource ID(s) to assign to the resource.')
-//   userAssignedResourceIds: string[]?
-// }?
+  @description('Optional. The resource ID(s) to assign to the resource.')
+  userAssignedResourceIds: string[]?
+}?
 
 type lockType = {
   @description('Optional. Specify the name of lock.')
