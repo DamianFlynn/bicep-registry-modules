@@ -7,7 +7,17 @@ param virtualNetworkName string
 @description('Required. The name of the Managed Identity to create.')
 param managedIdentityName string
 
-var addressPrefix = '10.0.0.0/16'
+var cirdBlock = 24
+
+resource innoIPAM 'innofactor.concierge/ipam@2024-05-02' = {
+  name: 'ipam'
+  location: location
+  properties: {
+    addressSpace: {
+      cideSize: cirdBlock
+    }
+  }
+}
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   name: virtualNetworkName
@@ -22,7 +32,13 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
       {
         name: 'defaultSubnet'
         properties: {
-          addressPrefix: cidrSubnet(addressPrefix, 16, 0)
+          addressPrefix: cidrSubnet(innoIPAM.properties.cidrblock, cirdBlock, 1)
+        }
+      }
+      {
+        name: 'backendSubnet'
+        properties: {
+          addressPrefix: cidrSubnet(innoIPAM.properties.cidrblock, cirdBlock, 2)
         }
       }
     ]

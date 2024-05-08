@@ -67,6 +67,8 @@ body:
         - "avm/res/container-instance/container-group"
         - "avm/res/container-registry/registry"
         - "avm/res/container-service/managed-cluster"
+        - "avm/res/custom-providers/custom-providers"
+        - "avm/res/dashboard/grafana"
         - "avm/res/data-factory/factory"
         - "avm/res/data-protection/backup-vault"
         - "avm/res/databricks/access-connector"
