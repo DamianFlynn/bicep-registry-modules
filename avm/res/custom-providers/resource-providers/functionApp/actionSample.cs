@@ -125,13 +125,13 @@ namespace CustomProvider.Action
                         _logger.LogInformation($"Preparing the Response Object");
                         var resultObject = new
                         {
-                            listMyActionResult = new
+                            subscriptions = new
                             {
                                 timestamp = DateTime.UtcNow,
                                 randomString = Guid.NewGuid().ToString(),
                                 resources = resultList
                             },
-                            message = "Subscriptions listed successfully."
+                            message = $"Subscription list for Tenant '{tenantResource.Data.TenantId}'"
                         };
 
                         return new OkObjectResult(resultObject);

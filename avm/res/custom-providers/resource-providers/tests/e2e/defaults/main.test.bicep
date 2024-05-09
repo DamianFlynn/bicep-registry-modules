@@ -99,6 +99,19 @@ module nestedDependencies 'dependencies.bicep' = {
   }
 }
 
+@description('We will assign the Subscription Contributor role to the managed identity so that it can enumberate subscriptions and deploy resources.')
+resource roleAssignmentSubscriptionContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(subscription().id, '${functionAppName}-identity', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      'b24988ac-6180-42a0-ab88-20f7382dd24c'
+    )
+    principalId: nestedDependencies.outputs.functionAppSystemAssignedManagedIdentityId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 // ============ //
 // Diagnostics
 // ============ //
@@ -135,6 +148,9 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
+    dependsOn: [
+      nestedDependencies // We require a function app to be deployed
+    ]
   }
 ]
 

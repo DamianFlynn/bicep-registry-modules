@@ -15,13 +15,20 @@ param eventHubAuthorizationRuleResourceId string
 param storageAccountResourceId string
 param workspaceResourceId string
 
+@description('Create an Application Insights resource for the Function App to use.')
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${functionAppName}-appinsights'
   location: location
   kind: ''
-  properties: {}
+  properties: {
+    IngestionMode: 'LogAnalytics'
+    Application_Type: 'web'
+    Flow_Type: 'Redfield'
+    WorkspaceResourceId: workspaceResourceId
+  }
 }
 
+@description('Create a Server Farm for the Function App to run on.')
 module custProviderFarm 'br/public:avm/res/web/serverfarm:0.1.1' = {
   name: '${functionAppName}-farm'
   params: {
@@ -38,6 +45,7 @@ module custProviderFarm 'br/public:avm/res/web/serverfarm:0.1.1' = {
   }
 }
 
+@description('Function App with a sample .NET 8 Isolated function for the Custom Resource Provider.')
 module custProviderFuntionApp 'br/public:avm/res/web/site:0.3.5' = {
   name: '${functionAppName}-func'
   params: {
@@ -72,3 +80,4 @@ module custProviderFuntionApp 'br/public:avm/res/web/site:0.3.5' = {
 
 output functionAppName string = custProviderFuntionApp.outputs.name
 output functionAppId string = custProviderFuntionApp.outputs.resourceId
+output functionAppSystemAssignedManagedIdentityId string = custProviderFuntionApp.outputs.systemAssignedMIPrincipalId
