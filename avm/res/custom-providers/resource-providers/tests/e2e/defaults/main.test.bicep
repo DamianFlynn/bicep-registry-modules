@@ -27,7 +27,7 @@ param namePrefix string = 'custrp' //'#_namePrefix_#'
 param functionAppName string = 'dep-${namePrefix}-fn-${serviceShort}'
 
 @description('Optional. The URI of the zip file containing the function code.')
-param zipFileBlobUri string = 'https://github.com/Azure/azure-custom-providers/blob/master/SampleFunctions/CSharpSimpleProvider/Artifacts/functionZip/functionpackage.zip?raw=true'
+param zipFileBlobUri string = 'https://github.com/DamianFlynn/bicep-registry-modules/blob/avm-res-dashboard-grafana/avm/res/custom-providers/resource-providers/functionApp/functionApp.zip?raw=true'
 
 @description('Optional. Actions of the resource as published in the Function Code.')
 param actions array = [
@@ -92,6 +92,25 @@ module nestedDependencies 'dependencies.bicep' = {
       Environment: 'Non-Prod'
       Role: 'DeploymentValidation'
     }
+    eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
+    eventHubAuthorizationRuleResourceId: diagnosticDependencies.outputs.eventHubAuthorizationRuleId
+    storageAccountResourceId: diagnosticDependencies.outputs.storageAccountResourceId
+    workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+  }
+}
+
+// ============ //
+// Diagnostics
+// ============ //
+module diagnosticDependencies '../../../../../../utilities/e2e-template-assets/templates/diagnostic.dependencies.bicep' = {
+  scope: resourceGroup
+  name: '${uniqueString(deployment().name, resourceLocation)}-diagnosticDependencies'
+  params: {
+    storageAccountName: 'dep${namePrefix}diasa${serviceShort}01'
+    logAnalyticsWorkspaceName: 'dep-${namePrefix}-law-${serviceShort}'
+    eventHubNamespaceEventHubName: 'dep-${namePrefix}-evh-${serviceShort}'
+    eventHubNamespaceName: 'dep-${namePrefix}-evhns-${serviceShort}'
+    location: resourceLocation
   }
 }
 
@@ -125,7 +144,8 @@ module postDeploymentVerification 'post.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-postValidations'
   params: {
-    name: testDeployment[0].outputs.resourceId
+    customRpName: testDeployment[0].outputs.name
+    customRpId: testDeployment[0].outputs.resourceId
     location: resourceLocation
     tags: {
       'hidden-title': 'This is visible in the resource name'

@@ -2,21 +2,35 @@
 param location string = resourceGroup().location
 
 @description('Required. The name of the Custom Resource Provider.')
-param name string
+param customRpName string
+
+@description('Required. The Resource ID of the Custom Resource Provider.')
+param customRpId string
 
 @description('Optional. Tags to apply to the resources.')
 param tags object = {}
 
 // The sample application and resources in the custom provider is offering a resource called 'users'
-var customProviderResourceName = '${name}/users'
+var customProviderResourceName = '${customRpName}/users'
 
 resource customProviderUser1 'Microsoft.CustomProviders/resourceProviders/users@2018-09-01-preview' = {
-  name: '${customProviderResourceName}/user1'
+  name: '${customRpName}/user1'
   location: location
   tags: tags
   properties: {
     FullName: 'Mystic'
     Location: 'Mayo'
+  }
+}
+
+module customAsg 'br/public:avm/res/network/application-security-group:0.1.3' = {
+  name: '${customRpName}-asg'
+  params: {
+    name: '${customRpName}-asg'
+    location: location
+    tags: {
+      custom: customProviderUser1.properties.randomString
+    }
   }
 }
 
@@ -46,11 +60,11 @@ resource customProviderUser1 'Microsoft.CustomProviders/resourceProviders/users@
 // These outputs can also be verified using the following REST API Tests
 //
 // listMyCustomAction
-// listURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/p-gov-crp/providers/Microsoft.CustomProviders/resourceProviders/jarvis20240507/listMyCustomAction?api-version=2018-09-01-preview"
+// listURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/dep-custrp-customrp-dbgmin-rg/providers/Microsoft.CustomProviders/resourceproviders/custrpdbgmin001/listMyCustomAction?api-version=2018-09-01-preview"
 // az rest --method post --uri $listURI
 //
 // listSubscriptions Action
-// listSubsURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/p-gov-crp/providers/Microsoft.CustomProviders/resourceProviders/jarvis20240507/listSubscriptions?api-version=2018-09-01-preview"
+// listSubsURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/dep-custrp-customrp-dbgmin-rg/providers/Microsoft.CustomProviders/resourceproviders/custrpdbgmin001/listSubscriptions?api-version=2018-09-01-preview"
 // az rest --method post --uri $listSubsURI
 
 //
@@ -63,5 +77,5 @@ output myUsersObjectName string = customProviderUser1.properties.randomString
 
 // Test using REST API
 //
-// usersURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/p-gov-crp/providers/Microsoft.CustomProviders/resourceProviders/jarvis20240507/users/user1?api-version=2018-09-01-preview"
-// az rest --method post --uri $listSubsURI
+// usersURI="https://management.azure.com/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/dep-custrp-customrp-dbgmin-rg/providers/Microsoft.CustomProviders/resourceproviders/custrpdbgmin001/users/user1?api-version=2018-09-01-preview"
+// az rest --method post --uri $usersURI

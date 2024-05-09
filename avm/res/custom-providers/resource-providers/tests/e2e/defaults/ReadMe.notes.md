@@ -16,11 +16,13 @@ Using Visual Studio Code:
 * Use the integrated terminal in VS Code to navigate to the root folder of your project.
 * Run the `dotnet publish -o OutputDirectory` command to publish the project files.
 * ```powershell
-  dotnet publish -o Atrifacts
+  dotnet publish . --configuration Release -o Arfifacts --self-contained false
   ```
 * Utilize the integrated terminal to run the `Compress-Archive` command to zip the published folder.
 * ```powershell
-  Compress-Archive -Path .\Artifacts\* -DestinationPath .\functionApp.zip
+  # We MUST include the .azurefunctions folder, so Get-ChildItem -Force is used to include hidden files
+  Get-ChildItem -Path ./Arfifacts/ -Force | Compress-Archive -DestinationPath .\functionApp.zip -Force
+  rm -r .\Arfifacts
   ```
 
 By following these steps, you can create a zipped package for your .NET 8 isolated application that is ready to be deployed to an Azure Function using the WEBSITE_RUN_FROM_PACKAGE application setting.

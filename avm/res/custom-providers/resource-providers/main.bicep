@@ -39,9 +39,9 @@ resource customProvider 'Microsoft.CustomProviders/resourceProviders@2018-09-01-
   location: location
   tags: tags
   properties: {
-    actions: actions
-    resourceTypes: resourceTypes
-    validations: validations
+    actions: length(actions) == 0 ? null : actions
+    resourceTypes: length(resourceTypes) == 0 ? null : resourceTypes
+    validations: length(validations) == 0 ? null : validations
   }
 }
 

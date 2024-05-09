@@ -10,6 +10,18 @@ param zipFileBlobUri string
 @description('Optional. Tags to apply to the resources.')
 param tags object = {}
 
+param eventHubName string
+param eventHubAuthorizationRuleResourceId string
+param storageAccountResourceId string
+param workspaceResourceId string
+
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${functionAppName}-appinsights'
+  location: location
+  kind: ''
+  properties: {}
+}
+
 module custProviderFarm 'br/public:avm/res/web/serverfarm:0.1.1' = {
   name: '${functionAppName}-farm'
   params: {
@@ -17,11 +29,11 @@ module custProviderFarm 'br/public:avm/res/web/serverfarm:0.1.1' = {
     location: location
     tags: tags
     sku: {
-      name: 'S1'
-      tier: 'Standard'
-      size: 'S1'
-      family: 'S'
-      capacity: 1
+      name: 'Y1'
+      tier: 'Dynamic'
+      size: 'Y1'
+      family: 'Y'
+      capacity: 0
     }
   }
 }
@@ -33,10 +45,12 @@ module custProviderFuntionApp 'br/public:avm/res/web/site:0.3.5' = {
     kind: 'functionapp'
     tags: tags
     serverFarmResourceId: custProviderFarm.outputs.resourceId
+    appInsightResourceId: applicationInsights.id
     appSettingsKeyValuePairs: {
       FUNCTIONS_EXTENSION_VERSION: '~4'
       FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
-      //WEBSITE_RUN_FROM_PACKAGE: zipFileBlobUri
+      SCM_DO_BUILD_DURING_DEPLOYMENT: true
+      WEBSITE_RUN_FROM_PACKAGE: zipFileBlobUri
     }
     siteConfig: {
       clientAffinityEnabled: false
@@ -45,6 +59,14 @@ module custProviderFuntionApp 'br/public:avm/res/web/site:0.3.5' = {
     managedIdentities: {
       systemAssigned: true
     }
+    diagnosticSettings: [
+      {
+        eventHubName: eventHubName
+        eventHubAuthorizationRuleResourceId: eventHubAuthorizationRuleResourceId
+        storageAccountResourceId: storageAccountResourceId
+        workspaceResourceId: workspaceResourceId
+      }
+    ]
   }
 }
 
