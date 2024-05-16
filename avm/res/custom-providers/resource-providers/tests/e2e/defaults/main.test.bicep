@@ -51,6 +51,11 @@ param actions array = [
 @description('Optional. Resource Types of the resource as published in the function code.')
 param resourceTypes array = [
   {
+    name: 'ping'
+    routingType: 'Proxy,Cache'
+    endpoint: 'https://${functionAppName}.azurewebsites.net/api/{requestPath}'
+  }
+  {
     name: 'users'
     routingType: 'Proxy,Cache'
     endpoint: 'https://${functionAppName}.azurewebsites.net/api/{requestPath}'
@@ -99,13 +104,17 @@ module nestedDependencies 'dependencies.bicep' = {
   }
 }
 
-@description('We will assign the Subscription Contributor role to the managed identity so that it can enumberate subscriptions and deploy resources.')
-resource roleAssignmentSubscriptionContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(subscription().id, '${functionAppName}-identity', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
+@description('We will assign the Subscription Reader role to the managed identity so that it can enumberate subscriptions and resource graph.')
+resource roleAssignmentSubscriptionReader 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(
+    uniqueString(subscription().id, deployment().name, resourceLocation),
+    '${functionAppName}-sysmi',
+    'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+  )
   properties: {
     roleDefinitionId: subscriptionResourceId(
       'Microsoft.Authorization/roleDefinitions',
-      'b24988ac-6180-42a0-ab88-20f7382dd24c'
+      'acdd72a7-3385-48ef-bd42-f606fba81ae7'
     )
     principalId: nestedDependencies.outputs.functionAppSystemAssignedManagedIdentityId
     principalType: 'ServicePrincipal'

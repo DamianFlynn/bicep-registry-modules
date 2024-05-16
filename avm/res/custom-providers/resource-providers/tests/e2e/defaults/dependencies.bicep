@@ -59,6 +59,7 @@ module custProviderFuntionApp 'br/public:avm/res/web/site:0.3.5' = {
       FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
       SCM_DO_BUILD_DURING_DEPLOYMENT: true
       WEBSITE_RUN_FROM_PACKAGE: zipFileBlobUri
+      APPINSIGHTS_INSTRUMENTATIONKEY: applicationInsights.properties.InstrumentationKey
     }
     siteConfig: {
       clientAffinityEnabled: false

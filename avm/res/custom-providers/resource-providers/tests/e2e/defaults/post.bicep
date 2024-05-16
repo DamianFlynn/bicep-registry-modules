@@ -4,16 +4,16 @@ metadata description = 'This resource deployment, will utilise the new Custom Re
 param location string = resourceGroup().location
 
 @description('Required. The name of the Custom Resource Provider.')
-param customRpName string
+param customRpName string = 'custrpdbgmin001'
 
 @description('Required. The Resource ID of the Custom Resource Provider.')
-param customRpId string
+param customRpId string = '/subscriptions/83264035-996f-4ca6-b71e-c534333d0ccf/resourceGroups/dep-custrp-customrp-dbgmin-rg/providers/Microsoft.CustomProviders/resourceproviders/custrpdbgmin001'
 
 @description('Optional. Tags to apply to the resources.')
 param tags object = {}
 
 // The sample application and resources in the custom provider is offering a resource called 'users'
-var customProviderResourceName = '${customRpName}/users'
+// var customProviderResourceName = '${customRpName}/users'
 
 // The Test Custom Resource Provider is offering a service called ListSubscriptions, which will return a list of subscriptions
 // and also accepts input parameters, which are defined below
@@ -43,8 +43,10 @@ module customAsg 'br/public:avm/res/network/application-security-group:0.1.3' = 
     name: '${customRpName}-asg'
     location: location
     tags: {
+      // Test the output of the custom resource provider 'Resource'
       custResourceUser1: customProviderUser1.properties.randomString
-      custAction: listSubscriptions(customRpId, '2018-09-01-preview', crpInputParameters).subscriptions.randomString
+      // Test the output of the custom resource provider 'Action'
+      custAction: listSubscriptions(customRpId, '2018-09-01-preview', crpInputParameters).tenantId
     }
   }
 }
@@ -80,7 +82,6 @@ module customAsg 'br/public:avm/res/network/application-security-group:0.1.3' = 
 //
 
 output myCustomAction object = listSubscriptions(customRpId, '2018-09-01-preview', crpInputParameters)
-output varCustomProviderResourceName string = customProviderResourceName
 output myUsersObject object = customProviderUser1
 output myUsersObjectName string = customProviderUser1.properties.randomString
 
